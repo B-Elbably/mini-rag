@@ -1,7 +1,9 @@
 ## mini-rag
 
 This is a minimal FastAPI implementation of a retrieval-augmented generation
-(RAG) application for processing text and PDF files.
+(RAG) application for processing text and PDF files. The application uses
+MongoDB for document storage and provides an extensible provider architecture
+for language models and vector databases.
 
 ## Requirements
 
@@ -99,3 +101,32 @@ The most important settings are defined in `src/.env`:
 
 Do not commit `src/.env`, `docker/.env`, or API keys to version control. Use
 the example files as templates for local configuration.
+
+## Project structure
+
+The provider implementations are organized under `src/stores`:
+
+```text
+src/stores/
+├── llm/
+│   ├── LLMEnums.py
+│   ├── LLMInterface.py
+│   ├── LLMProviderFactory.py
+│   └── providers/
+└── vectordb/
+    ├── __init__.py
+    └── providers/
+        ├── __init__.py
+        ├── VectorDBEnums.py
+        ├── VectorDBInterface.py
+        └── VectorDBProviderFactory.py
+```
+
+`VectorDBInterface` defines the common asynchronous operations for vector
+database providers, including collection management, batch insertion, and
+vector search. `VectorDBProviderFactory` is the integration point for
+provider-specific implementations. The currently registered provider
+identifiers are `qdrant`, `pinecone`, `chroma`, `weaviate`, and `milvus`;
+their concrete integrations are scaffolding and must be implemented before
+use. New providers can be added without changing the application-facing
+interface.
